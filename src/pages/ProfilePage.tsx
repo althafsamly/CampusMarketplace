@@ -8,6 +8,8 @@ import {
 } from "react-native";
 import { User } from "firebase/auth";
 import { PageTitle } from "../components/PageTitle";
+import { theme } from "../theme";
+
 export function ProfilePage({
   user,
   savedCount,
@@ -32,139 +34,435 @@ export function ProfilePage({
   onSignOut: () => void;
 }) {
   const name =
-    user?.displayName || user?.email?.split("@")[0] || "Campus guest";
+    user?.displayName || user?.email?.split("@")[0] || "Campus Student";
   const initials = name
     .split(/\s+/)
     .map((part) => part[0])
     .join("")
     .slice(0, 2)
     .toUpperCase();
+
   return (
-    <ScrollView contentContainerStyle={styles.content}>
-      <PageTitle title="Profile" subtitle="Your campus marketplace account" />
-      <View style={styles.hero}>
-        {user?.photoURL ? (
-          <Image source={{ uri: user.photoURL }} style={styles.avatar} />
-        ) : (
-          <View style={styles.avatar}>
-            <Text style={styles.initials}>{user ? initials : "?"}</Text>
+    <ScrollView
+      contentContainerStyle={styles.content}
+      showsVerticalScrollIndicator={false}
+    >
+      <PageTitle
+        title="Student Profile"
+        subtitle="Your campus credentials and marketplace activity"
+      />
+
+      {/* Digital Campus Student ID Card */}
+      <View style={styles.idCard}>
+        <View style={styles.idCardHeader}>
+          <Text style={styles.idCardUniversity}>CAMPUS VERIFIED ID</Text>
+          <View style={styles.verifiedChip}>
+            <Text style={styles.verifiedCheck}>✓</Text>
+            <Text style={styles.verifiedChipText}>ACTIVE</Text>
           </View>
-        )}
-        <Text style={styles.name}>{name}</Text>
-        <Text style={styles.muted}>
-          {user?.email || "Sign in to sell and message"}
-        </Text>
+        </View>
+
+        <View style={styles.hero}>
+          <View style={styles.avatarWrap}>
+            {user?.photoURL ? (
+              <Image source={{ uri: user.photoURL }} style={styles.avatar} />
+            ) : (
+              <View style={styles.avatarFallback}>
+                <Text style={styles.initials}>{initials || "🎓"}</Text>
+              </View>
+            )}
+            <View style={styles.avatarOnlineDot} />
+          </View>
+
+          <View style={styles.profileDetails}>
+            <Text style={styles.name}>{name}</Text>
+            <Text style={styles.email}>
+              {user?.email || "Student Account (Demo)"}
+            </Text>
+            <View style={styles.campusTag}>
+              <Text style={styles.campusTagText}>📍 North Campus · Class of '27</Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Stats strip */}
+        <View style={styles.statsStrip}>
+          <Pressable style={styles.statItem} onPress={onMyListings}>
+            <Text style={styles.statVal}>{listingCount}</Text>
+            <Text style={styles.statLbl}>Listings</Text>
+          </Pressable>
+          <View style={styles.statDivider} />
+          <Pressable style={styles.statItem} onPress={onSaved}>
+            <Text style={styles.statVal}>{savedCount}</Text>
+            <Text style={styles.statLbl}>Saved</Text>
+          </Pressable>
+          <View style={styles.statDivider} />
+          <View style={styles.statItem}>
+            <Text style={styles.statVal}>5.0 ★</Text>
+            <Text style={styles.statLbl}>Reputation</Text>
+          </View>
+        </View>
       </View>
-      <View style={styles.menu}>
-        <Row
-          label="My listings"
-          value={String(listingCount)}
+
+      {/* Settings & Navigation Menu */}
+      <View style={styles.menuCard}>
+        <MenuRow
+          icon="📦"
+          label="My Active Listings"
+          value={`${listingCount} items`}
           onPress={onMyListings}
         />
-        <Row label="Saved items" value={String(savedCount)} onPress={onSaved} />
-        <Row label="Meetup preferences" value="North Campus" />
+        <MenuRow
+          icon="♥"
+          label="Saved Wishlist"
+          value={`${savedCount} items`}
+          onPress={onSaved}
+        />
+        <MenuRow
+          icon="🛡️"
+          label="Campus Meetup Safe Spots"
+          value="Student Union / Library"
+        />
+        <MenuRow
+          icon="⚡"
+          label="Instant Notifications"
+          value="Enabled"
+        />
       </View>
+
+      {/* Status & Errors */}
       {error ? <Text style={styles.error}>{error}</Text> : null}
       {user && profileReady ? (
-        <Text style={styles.success}>Profile saved to Firebase</Text>
+        <View style={styles.syncedBanner}>
+          <Text style={styles.syncedText}>✓ Synced to Firestore Database</Text>
+        </View>
       ) : null}
+
+      {/* Auth Action */}
       {user ? (
-        <Pressable style={styles.outline} onPress={onSignOut}>
-          <Text style={styles.outlineText}>Sign out</Text>
+        <Pressable
+          style={({ pressed }) => [
+            styles.signOutButton,
+            pressed && styles.buttonPressed,
+          ]}
+          onPress={onSignOut}
+        >
+          <Text style={styles.signOutText}>Sign Out of Campus ID</Text>
         </Pressable>
       ) : (
-        <Pressable style={styles.primary} onPress={onSignIn}>
-          <Text style={styles.primaryText}>Sign in to continue</Text>
+        <Pressable
+          style={({ pressed }) => [
+            styles.signInButton,
+            pressed && styles.buttonPressed,
+          ]}
+          onPress={onSignIn}
+        >
+          <Text style={styles.signInText}>Sign In with Google Campus Account</Text>
         </Pressable>
       )}
-      <Text style={styles.backend}>
-        {firebaseConfigured
-          ? "Connected to Firebase"
-          : "Demo mode · Add Firebase keys to connect"}
-      </Text>
+
+      {/* Firebase connection badge */}
+      <View style={styles.firebaseFooter}>
+        <View
+          style={[
+            styles.firebaseDot,
+            firebaseConfigured && styles.firebaseDotConnected,
+          ]}
+        />
+        <Text style={styles.firebaseText}>
+          {firebaseConfigured
+            ? "Firebase Live Connected"
+            : "Demo Mode (Mock Data Active)"}
+        </Text>
+      </View>
     </ScrollView>
   );
 }
-function Row({
+
+function MenuRow({
+  icon,
   label,
   value,
   onPress,
 }: {
+  icon: string;
   label: string;
   value: string;
   onPress?: () => void;
 }) {
   return (
-    <Pressable style={styles.row} onPress={onPress}>
-      <Text style={styles.label}>{label}</Text>
-      <Text style={styles.muted}>{value}</Text>
+    <Pressable
+      style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
+      onPress={onPress}
+    >
+      <View style={styles.rowLeft}>
+        <Text style={styles.rowIcon}>{icon}</Text>
+        <Text style={styles.rowLabel}>{label}</Text>
+      </View>
+      <View style={styles.rowRight}>
+        <Text style={styles.rowValue}>{value}</Text>
+        <Text style={styles.rowChevron}>›</Text>
+      </View>
     </Pressable>
   );
 }
+
 const styles = StyleSheet.create({
-  content: { padding: 20, paddingBottom: 110 },
-  hero: { alignItems: "center", paddingBottom: 28 },
+  content: {
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: 110,
+  },
+  idCard: {
+    backgroundColor: theme.colors.card,
+    borderRadius: theme.radius.lg,
+    padding: 18,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    ...theme.shadows.md,
+    marginTop: 6,
+    marginBottom: 16,
+  },
+  idCardHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 16,
+  },
+  idCardUniversity: {
+    fontSize: 10,
+    fontWeight: "900",
+    letterSpacing: 1.5,
+    color: theme.colors.primary,
+  },
+  verifiedChip: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: theme.colors.primaryMuted,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: theme.radius.full,
+    gap: 4,
+  },
+  verifiedCheck: {
+    color: theme.colors.primary,
+    fontSize: 10,
+    fontWeight: "900",
+  },
+  verifiedChipText: {
+    fontSize: 9,
+    fontWeight: "800",
+    color: theme.colors.primary,
+  },
+  hero: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 14,
+    marginBottom: 18,
+  },
+  avatarWrap: {
+    position: "relative",
+  },
   avatar: {
-    width: 76,
-    height: 76,
-    borderRadius: 38,
-    backgroundColor: "#D6E5D7",
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+  },
+  avatarFallback: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: theme.colors.primaryMuted,
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 14,
   },
-  initials: { fontSize: 22, color: "#225347", fontWeight: "800" },
-  name: { color: "#173C34", fontSize: 24, fontWeight: "800", marginBottom: 6 },
-  muted: { color: "#87918C", fontSize: 12 },
-  menu: {
-    backgroundColor: "#FFF",
-    borderRadius: 16,
-    paddingHorizontal: 18,
+  initials: {
+    fontSize: 22,
+    color: theme.colors.primary,
+    fontWeight: "800",
+  },
+  avatarOnlineDot: {
+    position: "absolute",
+    bottom: 2,
+    right: 2,
+    width: 14,
+    height: 14,
+    borderRadius: 7,
+    backgroundColor: theme.colors.accent,
+    borderWidth: 2,
+    borderColor: "#FFFFFF",
+  },
+  profileDetails: {
+    flex: 1,
+  },
+  name: {
+    fontSize: 18,
+    fontWeight: "800",
+    color: theme.colors.textPrimary,
+  },
+  email: {
+    fontSize: 12,
+    color: theme.colors.textMuted,
+    marginTop: 2,
+  },
+  campusTag: {
+    marginTop: 6,
+    alignSelf: "flex-start",
+    backgroundColor: theme.colors.background,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+  },
+  campusTagText: {
+    fontSize: 10,
+    fontWeight: "600",
+    color: theme.colors.textSecondary,
+  },
+  statsStrip: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-around",
+    backgroundColor: theme.colors.background,
+    borderRadius: theme.radius.md,
+    paddingVertical: 12,
+  },
+  statItem: {
+    alignItems: "center",
+    flex: 1,
+  },
+  statVal: {
+    fontSize: 16,
+    fontWeight: "900",
+    color: theme.colors.primary,
+  },
+  statLbl: {
+    fontSize: 10,
+    fontWeight: "700",
+    color: theme.colors.textMuted,
+    marginTop: 2,
+  },
+  statDivider: {
+    width: 1,
+    height: 24,
+    backgroundColor: theme.colors.border,
+  },
+  menuCard: {
+    backgroundColor: theme.colors.card,
+    borderRadius: theme.radius.lg,
+    paddingHorizontal: 16,
     borderWidth: 1,
-    borderColor: "#E9ECE6",
+    borderColor: theme.colors.border,
+    ...theme.shadows.sm,
+    marginBottom: 20,
   },
   row: {
-    height: 58,
+    height: 54,
     flexDirection: "row",
+    alignItems: "center",
     justifyContent: "space-between",
-    alignItems: "center",
     borderBottomWidth: 1,
-    borderBottomColor: "#EEF1EC",
+    borderBottomColor: theme.colors.borderLight,
   },
-  label: { color: "#24483D", fontWeight: "700", fontSize: 14 },
-  primary: {
-    height: 50,
-    backgroundColor: "#1F5D4C",
-    borderRadius: 14,
-    justifyContent: "center",
+  rowPressed: {
+    opacity: 0.7,
+  },
+  rowLeft: {
+    flexDirection: "row",
     alignItems: "center",
-    marginTop: 24,
+    gap: 12,
   },
-  primaryText: { color: "#FFF", fontWeight: "800" },
-  outline: {
-    height: 50,
-    borderRadius: 14,
+  rowIcon: {
+    fontSize: 16,
+  },
+  rowLabel: {
+    fontSize: 13,
+    fontWeight: "700",
+    color: theme.colors.textPrimary,
+  },
+  rowRight: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  rowValue: {
+    fontSize: 11,
+    color: theme.colors.textMuted,
+    fontWeight: "600",
+  },
+  rowChevron: {
+    fontSize: 18,
+    color: theme.colors.textMuted,
+  },
+  signInButton: {
+    height: 48,
+    borderRadius: theme.radius.full,
+    backgroundColor: theme.colors.primary,
+    alignItems: "center",
+    justifyContent: "center",
+    ...theme.shadows.sm,
+  },
+  signInText: {
+    color: "#FFFFFF",
+    fontSize: 14,
+    fontWeight: "800",
+  },
+  signOutButton: {
+    height: 48,
+    borderRadius: theme.radius.full,
+    backgroundColor: theme.colors.card,
     borderWidth: 1,
-    borderColor: "#BCD0C3",
-    justifyContent: "center",
+    borderColor: theme.colors.redLight,
     alignItems: "center",
-    marginTop: 16,
+    justifyContent: "center",
   },
-  outlineText: { color: "#1F5D4C", fontWeight: "800" },
-  success: { color: "#23775D", fontSize: 12, fontWeight: "700", marginTop: 16 },
+  signOutText: {
+    color: theme.colors.red,
+    fontSize: 14,
+    fontWeight: "800",
+  },
+  buttonPressed: {
+    opacity: 0.9,
+    transform: [{ scale: 0.99 }],
+  },
+  syncedBanner: {
+    backgroundColor: theme.colors.primaryMuted,
+    padding: 10,
+    borderRadius: theme.radius.sm,
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  syncedText: {
+    fontSize: 12,
+    fontWeight: "700",
+    color: theme.colors.primary,
+  },
   error: {
-    color: "#B64950",
-    backgroundColor: "#FBECEE",
-    borderRadius: 10,
+    color: theme.colors.red,
+    backgroundColor: theme.colors.redLight,
+    borderRadius: 8,
     padding: 10,
     fontSize: 12,
-    lineHeight: 17,
-    marginTop: 16,
+    marginBottom: 16,
   },
-  backend: {
-    textAlign: "center",
-    color: "#9BA59F",
+  firebaseFooter: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+    marginTop: 20,
+  },
+  firebaseDot: {
+    width: 7,
+    height: 7,
+    borderRadius: 4,
+    backgroundColor: theme.colors.gold,
+  },
+  firebaseDotConnected: {
+    backgroundColor: theme.colors.accent,
+  },
+  firebaseText: {
     fontSize: 11,
-    marginTop: 22,
+    fontWeight: "600",
+    color: theme.colors.textMuted,
   },
 });
