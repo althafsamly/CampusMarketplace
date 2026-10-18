@@ -88,6 +88,7 @@ export default function App() {
     category: "All items",
     sortBy: "popular",
     condition: "All",
+    minPrice: null,
     maxPrice: null,
   });
 
@@ -176,8 +177,13 @@ export default function App() {
         const matchesCondition =
           filterOptions.condition === "All" ||
           item.condition === filterOptions.condition;
-        const matchesPrice =
+        const matchesMinPrice =
+          filterOptions.minPrice === null ||
+          filterOptions.minPrice === undefined ||
+          item.price >= filterOptions.minPrice;
+        const matchesMaxPrice =
           filterOptions.maxPrice === null ||
+          filterOptions.maxPrice === undefined ||
           item.price <= filterOptions.maxPrice;
 
         return (
@@ -185,7 +191,8 @@ export default function App() {
           matchesCampus &&
           matchesQuery &&
           matchesCondition &&
-          matchesPrice
+          matchesMinPrice &&
+          matchesMaxPrice
         );
       })
       .sort((a, b) => {
@@ -388,15 +395,52 @@ export default function App() {
               category={category}
               campus={selectedCampus}
               savedIds={savedIds}
+              filters={filterOptions}
               hasActiveFilters={
                 filterOptions.sortBy !== "popular" ||
                 filterOptions.condition !== "All" ||
+                filterOptions.minPrice !== null ||
                 filterOptions.maxPrice !== null
               }
               onQueryChange={setQueryText}
               onCategoryChange={setCategory}
               onCampusPress={() => setCampusModalOpen(true)}
               onFilterPress={() => setFilterModalOpen(true)}
+              onSelectPricePreset={(min, max) =>
+                setFilterOptions((prev) => ({
+                  ...prev,
+                  minPrice: min,
+                  maxPrice: max,
+                }))
+              }
+              onClearPriceFilter={() =>
+                setFilterOptions((prev) => ({
+                  ...prev,
+                  minPrice: null,
+                  maxPrice: null,
+                }))
+              }
+              onClearConditionFilter={() =>
+                setFilterOptions((prev) => ({
+                  ...prev,
+                  condition: "All",
+                }))
+              }
+              onClearSortFilter={() =>
+                setFilterOptions((prev) => ({
+                  ...prev,
+                  sortBy: "popular",
+                }))
+              }
+              onResetAllFilters={() =>
+                setFilterOptions({
+                  category: "All items",
+                  sortBy: "popular",
+                  condition: "All",
+                  minPrice: null,
+                  maxPrice: null,
+                })
+              }
               onSave={toggleSaved}
               onOpen={setSelectedListing}
               onProfile={() => setTab("Profile")}
@@ -492,12 +536,14 @@ export default function App() {
         <FilterModal
           visible={filterModalOpen}
           filters={filterOptions}
+          items={items}
           onApply={setFilterOptions}
           onReset={() =>
             setFilterOptions({
               category: "All items",
               sortBy: "popular",
               condition: "All",
+              minPrice: null,
               maxPrice: null,
             })
           }

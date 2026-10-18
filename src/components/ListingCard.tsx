@@ -149,7 +149,7 @@ export function ListingCard({
 
 const styles = StyleSheet.create({
   soldOverlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...(StyleSheet.absoluteFill as object),
     backgroundColor: "rgba(15, 36, 29, 0.6)",
     alignItems: "center",
     justifyContent: "center",
