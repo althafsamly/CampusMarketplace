@@ -161,10 +161,17 @@ export default function App() {
           category === "All items" || item.category === category;
         const matchesCampus =
           selectedCampus === "All Campuses" || item.campus === selectedCampus;
-        const matchesQuery =
-          !queryText ||
-          item.title.toLowerCase().includes(queryText.toLowerCase()) ||
-          item.category.toLowerCase().includes(queryText.toLowerCase());
+        
+  const searchText = queryText.trim().toLowerCase();
+
+  const matchesQuery =
+    !searchText ||
+    item.title.toLowerCase().includes(searchText) ||
+    item.category.toLowerCase().includes(searchText) ||
+    (item.description || "").toLowerCase().includes(searchText) ||
+    item.seller.toLowerCase().includes(searchText) ||
+    item.campus.toLowerCase().includes(searchText);
+
         const matchesCondition =
           filterOptions.condition === "All" ||
           item.condition === filterOptions.condition;
