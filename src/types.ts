@@ -46,9 +46,17 @@ export type Conversation = {
   messages: Message[];
 };
 
+export type PricePreset = {
+  id: string;
+  label: string;
+  min: number | null;
+  max: number | null;
+};
+
 export type FilterOptions = {
   category: string;
   sortBy: "popular" | "newest" | "price_asc" | "price_desc";
   condition: string;
+  minPrice: number | null;
   maxPrice: number | null;
 };

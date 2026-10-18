@@ -1,4 +1,4 @@
-import { Conversation, Listing } from "./types";
+import { Conversation, Listing, PricePreset } from "./types";
 
 export const campusLocations = [
   "All Campuses",
@@ -20,6 +20,22 @@ export const categoryList = [
 ];
 
 export const categories = categoryList.map((c) => c.id);
+
+export const pricePresets: PricePreset[] = [
+  { id: "all", label: "All Prices", min: null, max: null },
+  { id: "under_25", label: "Under $25", min: null, max: 25 },
+  { id: "25_50", label: "$25 – $50", min: 25, max: 50 },
+  { id: "50_100", label: "$50 – $100", min: 50, max: 100 },
+  { id: "100_200", label: "$100 – $200", min: 100, max: 200 },
+  { id: "200_plus", label: "$200+", min: 200, max: null },
+];
+
+export function formatPriceRange(min: number | null, max: number | null): string {
+  if (min === null && max === null) return "All Prices";
+  if (min === null && max !== null) return `Under $${max}`;
+  if (min !== null && max === null) return `$${min}+`;
+  return `$${min} – $${max}`;
+}
 
 export const seedListings: Listing[] = [
   {

@@ -9,9 +9,9 @@ import {
   View,
 } from "react-native";
 import { ListingCard } from "../components/ListingCard";
-import { categoryList } from "../data";
+import { categoryList, formatPriceRange, pricePresets } from "../data";
 import { theme } from "../theme";
-import { Listing } from "../types";
+import { FilterOptions, Listing } from "../types";
 
 export function ExplorePage({
   items,
@@ -19,11 +19,17 @@ export function ExplorePage({
   category,
   campus,
   savedIds,
+  filters,
   hasActiveFilters,
   onQueryChange,
   onCategoryChange,
   onCampusPress,
   onFilterPress,
+  onSelectPricePreset,
+  onClearPriceFilter,
+  onClearConditionFilter,
+  onClearSortFilter,
+  onResetAllFilters,
   onSave,
   onOpen,
   onProfile,
@@ -33,15 +39,29 @@ export function ExplorePage({
   category: string;
   campus: string;
   savedIds: string[];
+  filters?: FilterOptions;
   hasActiveFilters: boolean;
   onQueryChange: (value: string) => void;
   onCategoryChange: (value: string) => void;
   onCampusPress: () => void;
   onFilterPress: () => void;
+  onSelectPricePreset?: (min: number | null, max: number | null) => void;
+  onClearPriceFilter?: () => void;
+  onClearConditionFilter?: () => void;
+  onClearSortFilter?: () => void;
+  onResetAllFilters?: () => void;
   onSave: (id: string) => void;
   onOpen: (item: Listing) => void;
   onProfile: () => void;
 }) {
+  const hasPriceFilter = Boolean(
+    filters && (filters.minPrice !== null || filters.maxPrice !== null)
+  );
+
+  const priceLabel = hasPriceFilter
+    ? formatPriceRange(filters!.minPrice, filters!.maxPrice)
+    : null;
+
   return (
     <ScrollView
       contentContainerStyle={styles.content}
@@ -116,6 +136,7 @@ export function ExplorePage({
             hasActiveFilters && styles.filterButtonActive,
           ]}
           onPress={onFilterPress}
+          accessibilityLabel="Filter and sort options"
         >
           <Text
             style={[
@@ -161,14 +182,131 @@ export function ExplorePage({
         })}
       </ScrollView>
 
+      {/* Quick Price Filter Bar */}
+      <View style={styles.priceFilterContainer}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.priceFilterCarousel}
+        >
+          {pricePresets.map((preset) => {
+            const isSelected =
+              filters &&
+              filters.minPrice === preset.min &&
+              filters.maxPrice === preset.max;
+            return (
+              <Pressable
+                key={preset.id}
+                onPress={() => onSelectPricePreset?.(preset.min, preset.max)}
+                style={({ pressed }) => [
+                  styles.priceChip,
+                  isSelected && styles.priceChipActive,
+                  pressed && styles.priceChipPressed,
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.priceChipText,
+                    isSelected && styles.priceChipTextActive,
+                  ]}
+                >
+                  {preset.label}
+                </Text>
+              </Pressable>
+            );
+          })}
+
+          {/* If custom price range is set that doesn't match any preset */}
+          {hasPriceFilter &&
+            !pricePresets.some(
+              (p) =>
+                p.min === filters?.minPrice && p.max === filters?.maxPrice
+            ) && (
+              <Pressable
+                onPress={onClearPriceFilter}
+                style={[styles.priceChip, styles.priceChipActive]}
+              >
+                <Text style={[styles.priceChipText, styles.priceChipTextActive]}>
+                  {priceLabel} ✕
+                </Text>
+              </Pressable>
+            )}
+        </ScrollView>
+      </View>
+
+      {/* Active Filter Badges Bar */}
+      {hasActiveFilters && (
+        <View style={styles.activeFiltersSection}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.activeFiltersScroll}
+          >
+            {hasPriceFilter && (
+              <Pressable
+                style={styles.activeFilterBadge}
+                onPress={onClearPriceFilter}
+              >
+                <Text style={styles.activeFilterBadgeText}>🏷️ {priceLabel}</Text>
+                <View style={styles.activeFilterCloseCircle}>
+                  <Text style={styles.activeFilterCloseText}>✕</Text>
+                </View>
+              </Pressable>
+            )}
+
+            {filters?.condition && filters.condition !== "All" && (
+              <Pressable
+                style={styles.activeFilterBadge}
+                onPress={onClearConditionFilter}
+              >
+                <Text style={styles.activeFilterBadgeText}>
+                  ✨ {filters.condition}
+                </Text>
+                <View style={styles.activeFilterCloseCircle}>
+                  <Text style={styles.activeFilterCloseText}>✕</Text>
+                </View>
+              </Pressable>
+            )}
+
+            {filters?.sortBy && filters.sortBy !== "popular" && (
+              <Pressable
+                style={styles.activeFilterBadge}
+                onPress={onClearSortFilter}
+              >
+                <Text style={styles.activeFilterBadgeText}>
+                  ⚡{" "}
+                  {filters.sortBy === "price_asc"
+                    ? "Price: Low to High"
+                    : filters.sortBy === "price_desc"
+                    ? "Price: High to Low"
+                    : "Newly Listed"}
+                </Text>
+                <View style={styles.activeFilterCloseCircle}>
+                  <Text style={styles.activeFilterCloseText}>✕</Text>
+                </View>
+              </Pressable>
+            )}
+
+            <Pressable
+              style={styles.clearAllButton}
+              onPress={onResetAllFilters}
+            >
+              <Text style={styles.clearAllText}>Clear all</Text>
+            </Pressable>
+          </ScrollView>
+        </View>
+      )}
+
       {/* Section Header */}
       <View style={styles.feedHeader}>
-        <View>
+        <View style={styles.feedTitleContainer}>
           <Text style={styles.feedTitle}>
             {category === "All items" ? "Recommended for you" : category}
           </Text>
           <Text style={styles.feedSubtitle}>
-            Verified student listings near {campus === "All Campuses" ? "campus" : campus}
+            {hasPriceFilter
+              ? `Showing deals in ${priceLabel} near ${campus === "All Campuses" ? "campus" : campus}`
+              : `Verified student listings near ${campus === "All Campuses" ? "campus" : campus}`}
           </Text>
         </View>
         <View style={styles.countPill}>
@@ -187,10 +325,26 @@ export function ExplorePage({
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
             <Text style={styles.emptyIcon}>🔍</Text>
-            <Text style={styles.emptyTitle}>No items found</Text>
-            <Text style={styles.emptySubtitle}>
-              Try tweaking your search keywords or resetting filters.
+            <Text style={styles.emptyTitle}>
+              {hasPriceFilter
+                ? `No items in ${priceLabel}`
+                : "No items found"}
             </Text>
+            <Text style={styles.emptySubtitle}>
+              {hasPriceFilter
+                ? "Try adjusting your price range or exploring other categories."
+                : "Try tweaking your search keywords or resetting filters."}
+            </Text>
+            {hasPriceFilter && (
+              <Pressable
+                style={styles.emptyActionBtn}
+                onPress={onClearPriceFilter}
+              >
+                <Text style={styles.emptyActionBtnText}>
+                  Reset Price Filter
+                </Text>
+              </Pressable>
+            )}
           </View>
         }
         renderItem={({ item }) => (
@@ -308,7 +462,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
-    marginBottom: 16,
+    marginBottom: 14,
   },
   searchContainer: {
     flex: 1,
@@ -371,16 +525,18 @@ const styles = StyleSheet.create({
   },
   filterDot: {
     position: "absolute",
-    top: 10,
-    right: 10,
-    width: 8,
-    height: 8,
-    borderRadius: 4,
+    top: 9,
+    right: 9,
+    width: 9,
+    height: 9,
+    borderRadius: 4.5,
     backgroundColor: theme.colors.accent,
+    borderWidth: 1.5,
+    borderColor: "#FFFFFF",
   },
   categoryCarousel: {
     gap: 8,
-    paddingBottom: 8,
+    paddingBottom: 4,
   },
   categoryChip: {
     flexDirection: "row",
@@ -414,12 +570,97 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontWeight: "800",
   },
+  priceFilterContainer: {
+    marginTop: 10,
+    marginBottom: 4,
+  },
+  priceFilterCarousel: {
+    gap: 7,
+    paddingVertical: 2,
+  },
+  priceChip: {
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: theme.radius.sm,
+    backgroundColor: theme.colors.card,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    ...theme.shadows.sm,
+  },
+  priceChipActive: {
+    backgroundColor: theme.colors.primaryMuted,
+    borderColor: theme.colors.primary,
+  },
+  priceChipPressed: {
+    transform: [{ scale: 0.96 }],
+  },
+  priceChipText: {
+    fontSize: 12,
+    fontWeight: "700",
+    color: theme.colors.textSecondary,
+  },
+  priceChipTextActive: {
+    color: theme.colors.primary,
+    fontWeight: "800",
+  },
+  activeFiltersSection: {
+    marginTop: 10,
+    marginBottom: 4,
+  },
+  activeFiltersScroll: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  activeFilterBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: theme.colors.primarySoft,
+    borderColor: theme.colors.accent,
+    borderWidth: 1,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: theme.radius.full,
+    gap: 6,
+  },
+  activeFilterBadgeText: {
+    fontSize: 11,
+    fontWeight: "700",
+    color: theme.colors.primary,
+  },
+  activeFilterCloseCircle: {
+    width: 14,
+    height: 14,
+    borderRadius: 7,
+    backgroundColor: theme.colors.primary,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  activeFilterCloseText: {
+    fontSize: 9,
+    color: "#FFFFFF",
+    fontWeight: "900",
+    marginTop: -1,
+  },
+  clearAllButton: {
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+  },
+  clearAllText: {
+    fontSize: 12,
+    fontWeight: "700",
+    color: theme.colors.red,
+  },
   feedHeader: {
     flexDirection: "row",
     alignItems: "flex-end",
     justifyContent: "space-between",
-    marginTop: 20,
+    marginTop: 18,
     marginBottom: 12,
+  },
+  feedTitleContainer: {
+    flex: 1,
+    marginRight: 10,
   },
   feedTitle: {
     fontSize: 18,
@@ -451,7 +692,13 @@ const styles = StyleSheet.create({
   emptyContainer: {
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 60,
+    paddingVertical: 50,
+    paddingHorizontal: 20,
+    backgroundColor: theme.colors.card,
+    borderRadius: theme.radius.lg,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    marginTop: 10,
   },
   emptyIcon: {
     fontSize: 36,
@@ -461,12 +708,26 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: "800",
     color: theme.colors.textPrimary,
+    textAlign: "center",
   },
   emptySubtitle: {
     fontSize: 13,
     color: theme.colors.textMuted,
     textAlign: "center",
-    marginTop: 4,
-    maxWidth: 240,
+    marginTop: 6,
+    maxWidth: 280,
+  },
+  emptyActionBtn: {
+    marginTop: 18,
+    backgroundColor: theme.colors.primary,
+    paddingHorizontal: 18,
+    paddingVertical: 10,
+    borderRadius: theme.radius.full,
+    ...theme.shadows.sm,
+  },
+  emptyActionBtnText: {
+    color: "#FFFFFF",
+    fontSize: 13,
+    fontWeight: "800",
   },
 });
