@@ -9,12 +9,15 @@ export function MyListingsPage({
   items,
   onOpen,
   onSell,
+  onMarkSold,
 }: {
   items: Listing[];
   onOpen: (item: Listing) => void;
   onSell: () => void;
+  onMarkSold: (item: Listing) => void;
 }) {
-  const totalValue = items.reduce((sum, item) => sum + item.price, 0);
+  const activeItems = items.filter((item) => !item.sold);
+  const totalValue = activeItems.reduce((sum, item) => sum + item.price, 0);
 
   return (
     <ScrollView
@@ -34,7 +37,7 @@ export function MyListingsPage({
       {/* Seller Dashboard Stats */}
       <View style={styles.statsGrid}>
         <View style={styles.statCard}>
-          <Text style={styles.statNumber}>{items.length}</Text>
+          <Text style={styles.statNumber}>{activeItems.length}</Text>
           <Text style={styles.statLabel}>Active Items</Text>
         </View>
         <View style={styles.statCard}>
@@ -69,6 +72,7 @@ export function MyListingsPage({
             saved={false}
             onSave={() => undefined}
             onOpen={() => onOpen(item)}
+            onMarkSold={() => onMarkSold(item)}
           />
         )}
       />

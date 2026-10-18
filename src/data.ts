@@ -78,6 +78,7 @@ export const seedListings: Listing[] = [
   },
   {
     id: "4",
+    sold: true,
     title: "Vintage Champion Varsity Campus Jacket",
     price: 45,
     originalPrice: 95,
@@ -132,6 +133,7 @@ export const seedListings: Listing[] = [
   },
   {
     id: "7",
+    sold: true,
     title: "Single Speed City Commuter Cruiser Bike",
     price: 110,
     originalPrice: 260,
