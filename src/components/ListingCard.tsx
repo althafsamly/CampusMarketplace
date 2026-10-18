@@ -7,11 +7,13 @@ export function ListingCard({
   saved,
   onSave,
   onOpen,
+  onMarkSold,
 }: {
   item: Listing;
   saved: boolean;
   onSave: () => void;
   onOpen: () => void;
+  onMarkSold?: () => void;
 }) {
   const discount =
     item.originalPrice && item.originalPrice > item.price
@@ -30,6 +32,15 @@ export function ListingCard({
           style={styles.image}
           resizeMode="cover"
         />
+
+        {/* Sold out overlay */}
+        {item.sold && (
+          <View style={styles.soldOverlay}>
+            <View style={styles.soldPill}>
+              <Text style={styles.soldPillText}>SOLD OUT</Text>
+            </View>
+          </View>
+        )}
 
         {/* Condition floating badge */}
         <View style={styles.conditionBadge}>
@@ -115,12 +126,62 @@ export function ListingCard({
             </View>
           ) : null}
         </View>
+
+        {/* Mark as Sold (seller only) */}
+        {onMarkSold && !item.sold && (
+          <Pressable
+            style={({ pressed }) => [
+              styles.markSoldButton,
+              pressed && styles.cardPressed,
+            ]}
+            onPress={(e) => {
+              e.stopPropagation?.();
+              onMarkSold();
+            }}
+          >
+            <Text style={styles.markSoldText}>✓ Mark as Sold</Text>
+          </Pressable>
+        )}
       </View>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
+  soldOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(15, 36, 29, 0.6)",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 1,
+  },
+  soldPill: {
+    backgroundColor: theme.colors.red,
+    paddingHorizontal: 18,
+    paddingVertical: 8,
+    borderRadius: theme.radius.xs,
+    borderWidth: 2,
+    borderColor: "#FFFFFF",
+    transform: [{ rotate: "-12deg" }],
+  },
+  soldPillText: {
+    color: "#FFFFFF",
+    fontSize: 15,
+    fontWeight: "900",
+    letterSpacing: 1.5,
+  },
+  markSoldButton: {
+    marginTop: 6,
+    paddingVertical: 7,
+    borderRadius: theme.radius.full,
+    backgroundColor: theme.colors.primarySoft,
+    alignItems: "center",
+  },
+  markSoldText: {
+    color: theme.colors.primary,
+    fontSize: 11,
+    fontWeight: "800",
+  },
   card: {
     flex: 1,
     backgroundColor: theme.colors.card,

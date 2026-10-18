@@ -20,6 +20,7 @@ import {
   query,
   serverTimestamp,
   setDoc,
+  updateDoc,
 } from "firebase/firestore";
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -196,7 +197,12 @@ export default function App() {
   }, [items, category, selectedCampus, queryText, filterOptions]);
 
   const myListings = useMemo(
-    () => (user ? items.filter((item) => item.sellerId === user.uid) : []),
+    () =>
+      user
+        ? items.filter((item) => item.sellerId === user.uid)
+        : !firebaseConfigured
+          ? items.filter((item) => item.id.startsWith("local-"))
+          : [],
     [items, user],
   );
 
@@ -279,6 +285,22 @@ export default function App() {
 
     setItems((prev) => [newListing, ...prev]);
     setSellOpen(false);
+  };
+
+  const markAsSold = async (listing: Listing) => {
+    setItems((prev) =>
+      prev.map((i) => (i.id === listing.id ? { ...i, sold: true } : i)),
+    );
+    setSelectedListing((cur) =>
+      cur && cur.id === listing.id ? { ...cur, sold: true } : cur,
+    );
+    if (user && db && !listing.id.startsWith("local-")) {
+      try {
+        await updateDoc(doc(db, "listings", listing.id), { sold: true });
+      } catch (err) {
+        console.warn("Could not update sold status remotely", err);
+      }
+    }
   };
 
   const contactSeller = (listing: Listing) => {
@@ -403,6 +425,7 @@ export default function App() {
               items={myListings}
               onOpen={setSelectedListing}
               onSell={() => setSellOpen(true)}
+              onMarkSold={markAsSold}
             />
           )}
 
@@ -414,7 +437,9 @@ export default function App() {
               firebaseConfigured={firebaseConfigured}
               profileReady={profileReady}
               error={authError}
-              onMyListings={() => (user ? setTab("MyListings") : setAuthOpen(true))}
+              onMyListings={() =>
+                user || !firebaseConfigured ? setTab("MyListings") : setAuthOpen(true)
+              }
               onSaved={() => setTab("Saved")}
               onSignIn={() => setAuthOpen(true)}
               onSignOut={() => auth && signOut(auth)}
@@ -438,6 +463,13 @@ export default function App() {
           onClose={() => setSelectedListing(null)}
           onSave={() => selectedListing && toggleSaved(selectedListing.id)}
           onContact={() => selectedListing && contactSeller(selectedListing)}
+          isOwner={
+            !!selectedListing &&
+            (user
+              ? selectedListing.sellerId === user.uid
+              : !firebaseConfigured && selectedListing.id.startsWith("local-"))
+          }
+          onMarkSold={() => selectedListing && markAsSold(selectedListing)}
         />
 
         {/* Live Chat Modal */}
@@ -594,12 +626,16 @@ function ListingDetailModal({
   onClose,
   onSave,
   onContact,
+  isOwner,
+  onMarkSold,
 }: {
   item: Listing | null;
   saved: boolean;
   onClose: () => void;
   onSave: () => void;
   onContact: () => void;
+  isOwner: boolean;
+  onMarkSold: () => void;
 }) {
   if (!item) return null;
 
@@ -611,6 +647,41 @@ function ListingDetailModal({
             {/* Top Image Hero with Floating Controls */}
             <View style={styles.detailHero}>
               <Image source={{ uri: item.image }} style={styles.detailImage} />
+              {item.sold && (
+                <View
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: "rgba(15, 36, 29, 0.55)",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                  pointerEvents="none"
+                >
+                  <View
+                    style={{
+                      backgroundColor: "#FFFFFF",
+                      paddingHorizontal: 22,
+                      paddingVertical: 9,
+                      borderRadius: 999,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: theme.colors.red,
+                        fontSize: 16,
+                        fontWeight: "900",
+                        letterSpacing: 1.5,
+                      }}
+                    >
+                      SOLD OUT
+                    </Text>
+                  </View>
+                </View>
+              )}
               
               {/* Close Button */}
               <Pressable style={styles.detailFloatingClose} onPress={onClose}>
@@ -726,17 +797,33 @@ function ListingDetailModal({
 
           {/* Sticky Bottom Actions */}
           <View style={styles.detailFooter}>
-            <Pressable
-              style={({ pressed }) => [
-                styles.chatActionBtn,
-                pressed && styles.buttonPressed,
-              ]}
-              onPress={onContact}
-            >
-              <Text style={styles.chatActionText}>
-                💬 Message {item.seller}
-              </Text>
-            </Pressable>
+            {item.sold ? (
+              <View style={[styles.chatActionBtn, { opacity: 0.5 }]}>
+                <Text style={styles.chatActionText}>SOLD OUT</Text>
+              </View>
+            ) : isOwner ? (
+              <Pressable
+                style={({ pressed }) => [
+                  styles.chatActionBtn,
+                  pressed && styles.buttonPressed,
+                ]}
+                onPress={onMarkSold}
+              >
+                <Text style={styles.chatActionText}>✓ Mark as Sold</Text>
+              </Pressable>
+            ) : (
+              <Pressable
+                style={({ pressed }) => [
+                  styles.chatActionBtn,
+                  pressed && styles.buttonPressed,
+                ]}
+                onPress={onContact}
+              >
+                <Text style={styles.chatActionText}>
+                  💬 Message {item.seller}
+                </Text>
+              </Pressable>
+            )}
           </View>
         </View>
       </View>

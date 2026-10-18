@@ -17,6 +17,7 @@ export type Listing = {
   timeAgo?: string;
   likes?: number;
   isNegotiable?: boolean;
+  sold?: boolean;
 };
 
 export type Tab = "Explore" | "Saved" | "Messages" | "Profile" | "MyListings";
