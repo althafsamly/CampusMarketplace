@@ -1,4 +1,5 @@
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { useRef } from "react";
+import { Animated, Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { theme } from "../theme";
 import { Listing } from "../types";
 
@@ -13,6 +14,25 @@ export function ListingCard({
   onSave: () => void;
   onOpen: () => void;
 }) {
+  const heartScale = useRef(new Animated.Value(1)).current;
+
+  const handleSave = () => {
+    Animated.sequence([
+      Animated.timing(heartScale, {
+        toValue: 1.35,
+        duration: 120,
+        useNativeDriver: true,
+      }),
+      Animated.spring(heartScale, {
+        toValue: 1,
+        friction: 4,
+        tension: 100,
+        useNativeDriver: true,
+      }),
+    ]).start();
+    onSave();
+  };
+
   const discount =
     item.originalPrice && item.originalPrice > item.price
       ? Math.round(((item.originalPrice - item.price) / item.originalPrice) * 100)
@@ -44,22 +64,24 @@ export function ListingCard({
         )}
 
         {/* Heart / Save floating button */}
-        <Pressable
-          accessibilityLabel={saved ? "Remove from saved" : "Save item"}
-          style={({ pressed }) => [
-            styles.saveButton,
-            saved && styles.saveButtonActive,
-            pressed && styles.saveButtonPressed,
-          ]}
-          onPress={(e) => {
-            e.stopPropagation?.();
-            onSave();
-          }}
-        >
-          <Text style={[styles.heartIcon, saved && styles.heartIconActive]}>
-            {saved ? "♥" : "♡"}
-          </Text>
-        </Pressable>
+        <Animated.View style={{ transform: [{ scale: heartScale }] }}>
+          <Pressable
+            accessibilityLabel={saved ? "Remove from saved" : "Save item"}
+            style={({ pressed }) => [
+              styles.saveButton,
+              saved && styles.saveButtonActive,
+              pressed && styles.saveButtonPressed,
+            ]}
+            onPress={(e) => {
+              e.stopPropagation?.();
+              handleSave();
+            }}
+          >
+            <Text style={[styles.heartIcon, saved && styles.heartIconActive]}>
+              {saved ? "♥" : "♡"}
+            </Text>
+          </Pressable>
+        </Animated.View>
       </View>
 
       {/* Card body */}

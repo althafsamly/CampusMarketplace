@@ -38,6 +38,7 @@ import {
 import { CampusSelectorModal } from "./components/CampusSelectorModal";
 import { ChatModal } from "./components/ChatModal";
 import { FilterModal } from "./components/FilterModal";
+import { Toast, ToastMessage } from "./components/Toast";
 import { ExplorePage } from "./pages/ExplorePage";
 import { MessagesPage } from "./pages/MessagesPage";
 import { MyListingsPage } from "./pages/MyListingsPage";
@@ -45,6 +46,12 @@ import { ProfilePage } from "./pages/ProfilePage";
 import { SavedPage } from "./pages/SavedPage";
 import { initialConversations, seedListings } from "./data";
 import { auth, db, firebaseConfigured } from "./firebase";
+import {
+  clearAllSavedListings,
+  loadSavedListingIds,
+  saveListingId,
+  toggleSavedListingId,
+} from "./services/favoritesService";
 import { theme } from "./theme";
 import { Conversation, FilterOptions, Listing, Tab } from "./types";
 
@@ -72,6 +79,7 @@ export default function App() {
   const [category, setCategory] = useState("All items");
   const [selectedCampus, setSelectedCampus] = useState("All Campuses");
   const [savedIds, setSavedIds] = useState<string[]>(["1", "3"]);
+  const [toast, setToast] = useState<ToastMessage | null>(null);
   const [selectedListing, setSelectedListing] = useState<Listing | null>(null);
   const [user, setUser] = useState<User | null>(auth?.currentUser || null);
   
@@ -153,6 +161,13 @@ export default function App() {
     );
   }, []);
 
+  // Sync / Load Saved Favorites on startup and user authentication
+  useEffect(() => {
+    loadSavedListingIds(user?.uid).then((loaded) => {
+      setSavedIds(loaded);
+    });
+  }, [user?.uid]);
+
   // Filter & Sort Logic
   const filteredItems = useMemo(() => {
     return items
@@ -200,12 +215,61 @@ export default function App() {
     [items, user],
   );
 
-  const toggleSaved = (id: string) =>
-    setSavedIds((current) =>
-      current.includes(id)
-        ? current.filter((value) => value !== id)
-        : [...current, id],
+  const toggleSaved = async (id: string) => {
+    const targetItem = items.find((i) => i.id === id);
+    const { nextIds, isSaved } = await toggleSavedListingId(
+      id,
+      savedIds,
+      user?.uid,
     );
+    setSavedIds(nextIds);
+
+    if (isSaved) {
+      setToast({
+        id: "save-" + Date.now(),
+        type: "success",
+        icon: "❤️",
+        title: targetItem
+          ? `Saved "${targetItem.title.slice(0, 24)}..."`
+          : "Saved to Favorites",
+        actionText: "View",
+        onAction: () => setTab("Saved"),
+      });
+    } else {
+      setToast({
+        id: "remove-" + Date.now(),
+        type: "remove",
+        icon: "💔",
+        title: targetItem
+          ? `Removed "${targetItem.title.slice(0, 22)}..."`
+          : "Removed from Saved",
+        actionText: "Undo",
+        onAction: async () => {
+          const restored = await saveListingId(id, nextIds, user?.uid);
+          setSavedIds(restored);
+        },
+      });
+    }
+  };
+
+  const clearAllSaved = async () => {
+    const previous = [...savedIds];
+    await clearAllSavedListings(savedIds, user?.uid);
+    setSavedIds([]);
+    setToast({
+      id: "clear-" + Date.now(),
+      type: "info",
+      icon: "🗑️",
+      title: "All saved listings removed",
+      actionText: "Undo",
+      onAction: async () => {
+        setSavedIds(previous);
+        for (const prevId of previous) {
+          await saveListingId(prevId, [], user?.uid);
+        }
+      },
+    });
+  };
 
   const signInWithGoogle = async () => {
     if (!auth) return;
@@ -387,6 +451,8 @@ export default function App() {
               onSave={toggleSaved}
               onOpen={setSelectedListing}
               onBrowse={() => setTab("Explore")}
+              onClearAll={clearAllSaved}
+              onContact={contactSeller}
             />
           )}
 
@@ -486,6 +552,9 @@ export default function App() {
           onClose={() => setSellOpen(false)}
           onSubmit={publish}
         />
+
+        {/* Floating Toast Notification */}
+        <Toast toast={toast} onDismiss={() => setToast(null)} />
       </SafeAreaView>
     </View>
   );
@@ -726,6 +795,25 @@ function ListingDetailModal({
 
           {/* Sticky Bottom Actions */}
           <View style={styles.detailFooter}>
+            <Pressable
+              style={({ pressed }) => [
+                styles.detailSaveBtn,
+                saved && styles.detailSaveBtnActive,
+                pressed && styles.buttonPressed,
+              ]}
+              onPress={onSave}
+              accessibilityLabel={saved ? "Remove from wishlist" : "Save to wishlist"}
+            >
+              <Text
+                style={[
+                  styles.detailSaveHeart,
+                  saved && styles.detailSaveHeartActive,
+                ]}
+              >
+                {saved ? "♥" : "♡"}
+              </Text>
+            </Pressable>
+
             <Pressable
               style={({ pressed }) => [
                 styles.chatActionBtn,
@@ -1380,8 +1468,33 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.card,
     borderTopWidth: 1,
     borderTopColor: theme.colors.border,
+    flexDirection: "row",
+    gap: 12,
+    alignItems: "center",
+  },
+  detailSaveBtn: {
+    width: 50,
+    height: 50,
+    borderRadius: theme.radius.full,
+    borderWidth: 1.5,
+    borderColor: theme.colors.border,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: theme.colors.card,
+  },
+  detailSaveBtnActive: {
+    borderColor: theme.colors.red,
+    backgroundColor: theme.colors.redLight,
+  },
+  detailSaveHeart: {
+    fontSize: 22,
+    color: theme.colors.textSecondary,
+  },
+  detailSaveHeartActive: {
+    color: theme.colors.red,
   },
   chatActionBtn: {
+    flex: 1,
     height: 50,
     borderRadius: theme.radius.full,
     backgroundColor: theme.colors.primary,
