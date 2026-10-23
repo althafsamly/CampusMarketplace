@@ -1,10 +1,12 @@
 # 🎓 Campus Marketplace
 
-> A student-only marketplace for buying, selling, and trading within a trusted university community.
+> **A modern, student-only marketplace for buying, selling, and trading within a trusted university community.**
 
-Campus Marketplace is a modern mobile and web marketplace built specifically for university students. It provides a safe and convenient environment where students can discover, sell, save, and discuss items such as textbooks, electronics, dorm furniture, fashion, mobility products, and academic supplies.
+Campus Marketplace is a student-focused marketplace application designed to help university students safely buy, sell, save, and communicate about items within their campus community.
 
-The application was developed as part of a **Group Software Development Project**, using **React Native, Expo, TypeScript, and Firebase Cloud Firestore**.
+The platform supports a range of student needs, including **textbooks, electronics, dorm furniture, fashion, mobility products, and academic supplies**.
+
+The project was developed as part of a **Group Software Development Project** using **React Native, Expo SDK 57, TypeScript, and Firebase Cloud Firestore**.
 
 ---
 
@@ -12,16 +14,18 @@ The application was developed as part of a **Group Software Development Project*
 
 | | |
 |---|---|
-| Project | Campus Marketplace |
+| **Project** | Campus Marketplace |
 | **Project Type** | Group Software Development Project |
 | **Platform** | Web & Mobile |
-| **Framework** | React Native + Expo |
+| **Framework** | React Native |
+| **Expo** | SDK 57 |
+| **Language** | TypeScript |
 | **Backend** | Firebase |
 | **Database** | Cloud Firestore |
-| **Language** | TypeScript |
-| **Repository** | [Campus Marketplace](https://github.com/althafsamly/CampusMarketplace) |
-| **Upstream Base** | [Campus Marketplace – Webtegy](https://github.com/webtegy/campus-marketplace) |
-| **Video Demonstration** | *Add your 5–8 minute video demonstration link here* |
+| **Authentication** | Firebase Authentication / Google OAuth |
+| **Repository** | [CampusMarketplace](https://github.com/althafsamly/CampusMarketplace) |
+| **Upstream Base** | [webtegy/campus-marketplace](https://github.com/webtegy/campus-marketplace) |
+| **Video Demonstration** | *Add your final 5–8 minute video link here* |
 
 ---
 
@@ -29,34 +33,37 @@ The application was developed as part of a **Group Software Development Project*
 
 | Registration No. | Student Name | Assigned Role | Key Contributions |
 |---|---|---|---|
-| **2023/CSC/011** | **B. Althaf Samly** | Team Lead & Full-Stack Architect | Project architecture and scaffolding, Firebase integration, authentication lifecycle, Firestore security rules, and application coordinator state |
-| **2023/CSC/038** | **K.G.D.N. Kotuwegedara** | Frontend & Search Engineer | Enhanced search and filtering, keyword search across listings, seller search, and campus selector integration |
-| **2023/CSC/038** | **K.D.M.G.S. Dissanayaka** | UI/UX & Filtering Engineer | Dynamic price filtering, price preset chips, active filter tags, instant filter reset, and condition filtering |
-| **2023/CSC/012** | **V. Amasha Chathumini** | Inventory & Dashboard Engineer | Mark-as-sold lifecycle, sold-out overlays, listing status management, and seller dashboard statistics |
-| **2023/CSC/031** | **J.B.U.L. Nayanashan** | Messaging & Wishlist Engineer | Saved wishlist, buyer-seller conversations, chat interface, campus safety guidelines, and project documentation |
-
-> **Note:** Please verify the duplicated registration number `2023/CSC/038` before submitting the final repository.
+| **2023/CSC/011** | **B. Althaf Samly** |  Full-Stack Architect | Project architecture and scaffolding; Firebase integration; authentication lifecycle; Firestore security rules; application coordinator state; Saved favorites wishlist; in-app chat threads; campus safety guidelines; and seller messaging functionality. |
+| **2023/CSC/094** | **K.G.D.N. Kotuwegedara** | Inventory & Dashboard  | Mark as Sold lifecycle; listing status toggle; sold-out overlay badges across listing cards and detail views; seller dashboard inventory metrics. |
+| **2023/CSC/038** | **K.D.M.G.S. Dissanayaka** | Filtering & Pricing  | Dynamic price filtering; price bracket preset chips; active filter tags; instant filter reset; and condition filters. |
+| **2023/CSC/012** | **V. Amasha Chathumini** | Search & Discovery  | Enhanced listing search; keyword matching across titles, descriptions, categories, and sellers; campus location selector modal; and category tabs. |
+| **2023/CSC/031** | **J.B.U.L. Nayanashan** | UI/UX & Design Systems  | UI/UX improvements; unified theme tokens; verified digital student ID card component; contextual empty states; and project documentation. |
 
 ---
 
-# ✨ Key Features
+# 🚀 Key Features
+
+Our team implemented four major feature enhancements to significantly improve the functionality, usability, and safety of the original marketplace application.
+
+---
 
 ## 🔎 1. Real-Time Search & Multi-Criteria Filtering
 
-The marketplace provides a fast and flexible discovery experience for students.
+The marketplace provides a fast and flexible search experience that allows students to quickly discover relevant listings.
 
 ### Features
 
-- 🔍 Keyword search across:
-  - Listing titles
+- 🔍 **Keyword Search** across:
+  - Item titles
   - Descriptions
   - Categories
   - Campuses
   - Seller names
-- 🏫 Campus-based filtering
-- 📚 Category filtering
-- ⚡ Instant client-side filtering using React's `useMemo`
-- 🎯 Multiple filters can be combined
+
+- 🏫 **Campus Location Filtering**
+- 📚 **Category Filtering**
+- ⚡ **Memoized Client-Side Filtering** using `useMemo`
+- 🎯 Multiple filtering criteria can be combined
 
 ### Supported Categories
 
@@ -67,9 +74,7 @@ The marketplace provides a fast and flexible discovery experience for students.
 - 🚲 Mobility
 - ✏️ Supplies
 
-### Campus Locations
-
-Example campus locations include:
+### Example Campus Locations
 
 - North Campus
 - West Village
@@ -95,33 +100,33 @@ feature/enhanced-listing-search
 
 # 💰 2. Dynamic Price Filtering & Active Filter Tags
 
-Students can quickly narrow down listings based on their preferred budget.
+Students can quickly narrow down marketplace listings according to their preferred budget.
 
 ### Price Presets
 
-| Price Range | Filter |
-|---|---|
-| All Prices | No price restriction |
-| Under $25 | `$0 – $24.99` |
-| $25–$50 | `$25 – $50` |
-| $50–$100 | `$50 – $100` |
-| $100–$200 | `$100 – $200` |
-| $200+ | `$200 and above` |
+| Preset | Price Range |
+|---|---:|
+| **All Prices** | All listings |
+| **Under $25** | Less than $25 |
+| **$25–$50** | $25 to $50 |
+| **$50–$100** | $50 to $100 |
+| **$100–$200** | $100 to $200 |
+| **$200+** | $200 and above |
 
 ### Additional Features
 
-- 🏷️ Active filter badges
+- 🏷️ Dynamic active filter badges
 - ❌ One-click filter removal
-- 🔄 Reset All functionality
+- 🔄 **Reset All** functionality
 - 📊 Multiple sorting options
-- ⚡ Instant filtering without unnecessary navigation
+- ⚡ Instant filtering
 
 ### Sorting Options
 
-- Most Popular
-- Newest First
-- Price: Low to High
-- Price: High to Low
+- **Most Popular**
+- **Newest First**
+- **Price: Low to High**
+- **Price: High to Low**
 
 ### Main Components
 
@@ -142,25 +147,25 @@ feature/price-filter
 
 # ✅ 3. Mark as Sold & Seller Dashboard
 
-The listing lifecycle has been extended to support completed transactions.
+The application provides a complete listing status lifecycle, allowing sellers to indicate when an item has been successfully sold.
 
 ### Mark as Sold
 
-Sellers can mark their listings as sold from:
+Sellers can mark an item as sold from:
 
 - Listing detail view
 - My Listings dashboard
 
-Once a listing is sold:
+When a listing is marked as sold:
 
-- A prominent **SOLD OUT** badge is displayed.
+- A prominent **SOLD OUT** overlay is displayed.
 - The listing status is updated.
-- Buyer inquiries are disabled.
-- Sold items are visually distinguished throughout the application.
+- Buyer inquiries are automatically disabled.
+- The item is visually identified as unavailable.
 
 ### 📊 Seller Dashboard
 
-Sellers can monitor important inventory statistics, including:
+The seller dashboard provides useful inventory information, including:
 
 - Active inventory count
 - Total inventory valuation
@@ -185,33 +190,33 @@ sold-out-feature
 
 # ❤️ 4. Saved Wishlist & Buyer-Seller Messaging
 
-Students can save interesting listings and communicate directly with sellers.
+Students can save interesting listings and communicate directly with sellers through the application.
 
 ## ❤️ Saved Wishlist
 
 Users can:
 
-- Save listings with a single tap
-- Remove saved listings
-- View all saved listings from the Saved tab
-- Keep their saved items synchronized with their account
+- Save listings with one tap.
+- Remove saved listings.
+- View saved items from the dedicated **Saved** tab.
+- Keep saved items synchronized with their account.
 
 ## 💬 In-App Messaging
 
-The application provides direct buyer-seller communication.
+The application provides direct communication between buyers and sellers.
 
 Features include:
 
-- Conversation threads
-- Buyer-to-seller messaging
-- Listing context associated with conversations
-- Pre-filled listing information when starting a conversation
+- Buyer-seller conversation threads
+- Direct messaging
+- Listing context when starting a conversation
+- Pre-filled item information
 - Seller/buyer identification
 - Prevention of sellers contacting themselves
 
 ## 🛡️ Campus Safety
 
-Safety reminders are displayed to encourage students to meet in appropriate public locations, such as:
+Safety notices are included to encourage students to meet in appropriate public locations, such as:
 
 - Student Union
 - Library Café
@@ -227,36 +232,36 @@ src/components/ChatModal.tsx
 
 ---
 
-# 🏗️ System Architecture
+# 🏗️ Application Architecture
 
-The application follows a client-based architecture using React Native and Firebase.
+Campus Marketplace follows a modern client-backend architecture using React Native/Expo on the frontend and Firebase as the backend platform.
 
 ```text
-┌──────────────────────────────────────┐
-│          React Native / Expo         │
-│                                      │
-│  ┌────────────┐    ┌─────────────┐  │
-│  │   Pages    │    │ Components  │  │
-│  └─────┬──────┘    └──────┬──────┘  │
-│        │                  │         │
-│        └─────────┬────────┘         │
-│                  │                  │
-│          Application State         │
-│                  │                  │
-└──────────────────┼──────────────────┘
-                   │
-                   ▼
-        ┌─────────────────────┐
-        │       Firebase      │
-        │                     │
-        │ ┌─────────────────┐ │
-        │ │ Authentication  │ │
-        │ └─────────────────┘ │
-        │                     │
-        │ ┌─────────────────┐ │
-        │ │ Cloud Firestore │ │
-        │ └─────────────────┘ │
-        └─────────────────────┘
+┌─────────────────────────────────────────┐
+│           React Native + Expo           │
+│                                         │
+│  ┌──────────────┐   ┌───────────────┐  │
+│  │    Pages     │   │  Components   │  │
+│  └──────┬───────┘   └───────┬───────┘  │
+│         │                   │          │
+│         └─────────┬─────────┘          │
+│                   │                    │
+│          Application State             │
+│                   │                    │
+└───────────────────┼────────────────────┘
+                    │
+                    ▼
+        ┌────────────────────────┐
+        │        Firebase        │
+        │                        │
+        │ ┌────────────────────┐ │
+        │ │ Authentication     │ │
+        │ └────────────────────┘ │
+        │                        │
+        │ ┌────────────────────┐ │
+        │ │ Cloud Firestore    │ │
+        │ └────────────────────┘ │
+        └────────────────────────┘
 ```
 
 ---
@@ -270,36 +275,34 @@ The application follows a client-based architecture using React Native and Fireb
 | **TypeScript** | `6.0.3` |
 | **Firebase** | `12.18.0` |
 | **Cloud Firestore** | Database |
-| **Firebase Authentication** | User authentication |
+| **Firebase Authentication** | Authentication |
 | **React DOM** | `19.2.3` |
 | **React Native Web** | `0.21.2` |
-| **@expo/vector-icons** | Application icons |
-| **StyleSheet** | Native styling and design system |
+| **@expo/vector-icons** | Icons |
+| **React Native StyleSheet** | Styling & design system |
 
 ### Design System
 
-The application uses a unified React Native `StyleSheet`-based design system.
+The application uses a unified React Native `StyleSheet` design system with centralized design tokens.
 
 ```text
 src/theme.ts
 ```
 
-This allows colors, typography, spacing, and other design values to remain consistent throughout the application.
+This helps maintain consistent styling across the application.
 
 ---
 
-# 🚀 Getting Started
-
-Follow the steps below to run the project locally.
+# 💻 How to Run the Project Locally
 
 ## Prerequisites
 
-Make sure the following software is installed:
+Make sure the following are installed:
 
 - **Node.js:** `v22.13.0` or newer
 - **npm:** `v10.8.0` or newer
 
-The project has also been verified with:
+The project has been verified with:
 
 ```text
 Node.js v24.18.0
@@ -318,7 +321,7 @@ cd CampusMarketplace
 
 ## 2. Configure Environment Variables
 
-Copy the example environment file.
+Copy the sample environment file.
 
 ### Windows PowerShell
 
@@ -332,7 +335,7 @@ Copy-Item .env.example .env
 cp .env.example .env
 ```
 
-> The application can automatically operate in **offline demo mode** when custom Firebase credentials are not provided.
+> The application automatically supports an **offline demo mode** when custom Firebase credentials are not provided.
 
 ---
 
@@ -360,7 +363,7 @@ Alternatively:
 npx expo start --web
 ```
 
-The application should become available at:
+The application will be available at:
 
 ```text
 http://localhost:8081
@@ -379,13 +382,13 @@ npm start
 Then:
 
 1. Install **Expo Go** on your Android or iOS device.
-2. Make sure your phone and development computer are connected to the same network.
+2. Connect your phone and development computer to the same network.
 3. Scan the QR code displayed in the terminal.
-4. Open the project through Expo Go.
+4. Open the project using Expo Go.
 
 ---
 
-## Option C — Type Checking & Configuration Verification
+## Option C — Type Checking & Configuration
 
 Run TypeScript validation:
 
@@ -393,7 +396,7 @@ Run TypeScript validation:
 npx tsc --noEmit
 ```
 
-Verify the Expo configuration:
+Verify Expo configuration:
 
 ```bash
 npx expo config --type public
@@ -401,53 +404,48 @@ npx expo config --type public
 
 ---
 
-# 🔐 Security & Data Architecture
+# 🔒 Security & Data Architecture
 
-Security and controlled access are important parts of Campus Marketplace.
+Security and controlled access are core parts of the Campus Marketplace architecture.
 
-## Guest Browsing
+## 🌐 Unrestricted Browsing
 
-Unauthenticated users can:
+Guest users can:
 
-- Browse listings
-- Search the marketplace
+- Browse marketplace listings
+- Search inventory
 - Apply filters
-- Explore available campus inventory
+- Explore campus inventory
 
-## Authenticated Interactions
+## 🔐 Gated Interactions
 
-Authentication is required for actions such as:
+Authenticated access is required for protected actions.
 
-- Publishing listings
-- Contacting sellers
-- Managing saved listings
-- Managing personal listings
+The application uses **Google OAuth authorization** and prompts unauthenticated users with a sign-in modal when they attempt to:
 
-Users are prompted to authenticate before accessing protected functionality.
+- Publish listings
+- Contact sellers
+- Access protected interactions
 
----
+## 👤 Strict Data Isolation
 
-## 🔒 Firestore Security
+Sellers can only modify or mark their own active listings as sold.
 
-Firestore security rules restrict users from modifying data that does not belong to them.
-
-For example, sellers can only manage their own listings using their authenticated user ID:
+The application enforces ownership using:
 
 ```text
 sellerId == auth.uid
 ```
 
-The primary security configuration is located at:
+## 🗄️ Firestore Security Rules
+
+Database access is controlled using:
 
 ```text
 firestore.rules
 ```
 
----
-
-## 🗄️ Firestore Collections
-
-The application uses Firestore collections for:
+Rules enforce appropriate read/write permissions for:
 
 ```text
 listings
@@ -456,19 +454,15 @@ users/{uid}/saved
 conversations
 ```
 
-These collections support the marketplace, authentication-related user data, saved items, and buyer-seller communication.
-
----
-
 ## ⚡ Compound Indexing
 
-Firestore compound indexes are defined in:
+Firestore indexes are defined in:
 
 ```text
 firestore.indexes.json
 ```
 
-The project includes indexing for operations such as:
+The project includes compound indexing for:
 
 ```text
 sellerId ASC
@@ -479,9 +473,9 @@ This supports efficient seller-specific listing queries combined with chronologi
 
 ---
 
-# 🌿 Git Collaboration Strategy
+# 🌿 Git Collaboration & Branching Strategy
 
-The development team used a feature-branch workflow to separate development tasks and integrate changes through Pull Requests.
+Our team followed a feature-branch workflow with peer-reviewed Pull Requests.
 
 ## Main Branch
 
@@ -489,11 +483,11 @@ The development team used a feature-branch workflow to separate development task
 main
 ```
 
-Contains the stable, production-ready version of the application.
+The `main` branch contains the stable version of the project.
 
 ## Feature Branches
 
-### Enhanced Search
+### Enhanced Listing Search
 
 ```text
 feature/enhanced-listing-search
@@ -501,11 +495,11 @@ feature/enhanced-listing-search
 
 Implemented:
 
-- Keyword search
-- Category filtering
+- Enhanced search
+- Categories
 - Campus filtering
 
-**PR #2**
+**Pull Request:** `#2`
 
 ---
 
@@ -517,11 +511,11 @@ sold-out-feature
 
 Implemented:
 
+- Listing status management
 - Mark as Sold functionality
 - Sold-out badges
-- Listing lifecycle management
 
-**PR #4**
+**Pull Request:** `#4`
 
 ---
 
@@ -534,11 +528,11 @@ feature/price-filter
 Implemented:
 
 - Price ranges
-- Price preset chips
+- Price presets
 - Active filter tags
 - Filter reset functionality
 
-**PR #5**
+**Pull Request:** `#5`
 
 ---
 
@@ -548,18 +542,18 @@ Implemented:
 feature/ui-improvements
 ```
 
-Implemented various interface improvements, including:
+Implemented:
 
-- Theme refinements
-- ID card profile
+- Unified themes
+- Verified digital student ID card
 - Empty states
-- General UI polishing
+- UI/UX improvements
 
 ---
 
 # 📁 Project Structure
 
-A simplified overview of the project structure:
+A simplified project structure is shown below:
 
 ```text
 CampusMarketplace/
@@ -594,131 +588,121 @@ CampusMarketplace/
 The main objectives of Campus Marketplace are to:
 
 - Provide a dedicated marketplace for university students.
-- Make buying and selling within a campus community easier.
-- Provide fast search and filtering capabilities.
-- Enable secure buyer-seller communication.
-- Allow students to save listings for later.
-- Provide sellers with useful inventory statistics.
-- Encourage safer in-person transactions.
-- Demonstrate practical use of modern mobile application development technologies.
+- Simplify buying and selling within the campus community.
+- Provide fast search and filtering.
+- Enable direct buyer-seller communication.
+- Allow users to save listings for later.
+- Give sellers useful inventory statistics.
+- Support safer in-person transactions.
+- Demonstrate practical application of modern software development technologies.
+- Demonstrate effective GitHub collaboration and feature-based development.
 
 ---
 
 # 🧪 Testing & Verification
 
-Before submission, the following commands can be used to verify the project:
+The following commands can be used to verify the project before submission:
+
+### Install Dependencies
 
 ```bash
 npm install
 ```
 
+### TypeScript Validation
+
 ```bash
 npx tsc --noEmit
 ```
+
+### Expo Configuration
 
 ```bash
 npx expo config --type public
 ```
 
+### Start Web Application
+
 ```bash
 npm run web
 ```
 
-The application should successfully compile and run in the browser without TypeScript errors.
-
 ---
 
-# 🎥 Video Demonstration
+# 📸 Recommended Screenshots
 
-> **Add your final 5–8 minute demonstration video here.**
+For a stronger GitHub presentation, screenshots can be added to a `docs/screenshots` directory.
 
-Example:
-
-```text
-🎥 Video Demo: [Add YouTube / Google Drive Link]
-```
-
-The demonstration should cover:
-
-1. Application overview
-2. User authentication
-3. Browsing listings
-4. Search and filtering
-5. Price filtering
-6. Creating/managing listings
-7. Mark as Sold functionality
-8. Saved wishlist
-9. Buyer-seller messaging
-10. Security and Firebase functionality
-
----
-
-# 📸 Screenshots
-
-Add screenshots of the completed application here to make the repository easier to evaluate.
-
-Recommended screenshots:
+Recommended screenshots include:
 
 | Screenshot | Description |
 |---|---|
-| 🏠 Home / Explore | Marketplace landing and listing feed |
-| 🔎 Search | Keyword search and filtering |
-| 💰 Filters | Price and category filters |
-| 📄 Listing Details | Individual product details |
-| ❤️ Saved | User's saved listings |
-| 💬 Messages | Buyer-seller conversation |
-| 📦 My Listings | Seller inventory dashboard |
-| ✅ Sold | Sold-out listing state |
-| 👤 Profile | User profile and account |
+| 🏠 **Explore** | Main marketplace and listing feed |
+| 🔎 **Search** | Keyword search functionality |
+| 🎛️ **Filters** | Price, category, condition, and campus filters |
+| 📄 **Listing Details** | Individual product information |
+| ❤️ **Saved** | User's saved listings |
+| 💬 **Messages** | Buyer-seller conversation |
+| 📦 **My Listings** | Seller inventory dashboard |
+| ✅ **Sold** | Sold-out listing state |
+| 👤 **Profile** | User profile and digital student ID |
 
-Example structure:
+Suggested structure:
 
 ```text
 docs/
-├── screenshots/
-│   ├── home.png
-│   ├── search.png
-│   ├── filters.png
-│   ├── listing-details.png
-│   ├── saved.png
-│   ├── messages.png
-│   └── my-listings.png
+└── screenshots/
+    ├── home.png
+    ├── search.png
+    ├── filters.png
+    ├── listing-details.png
+    ├── saved.png
+    ├── messages.png
+    ├── my-listings.png
+    └── profile.png
 ```
 
 ---
 
-# 🔗 Repository Links
 
-### Main Repository
 
-[github.com/althafsamly/CampusMarketplace](https://github.com/althafsamly/CampusMarketplace)
+# 🔗 Project Links
+
+### Repository
+
+**GitHub:**  
+https://github.com/althafsamly/CampusMarketplace
 
 ### Upstream Project
 
-[github.com/webtegy/campus-marketplace](https://github.com/webtegy/campus-marketplace)
+**GitHub:**  
+https://github.com/webtegy/campus-marketplace
+
+### Video Demonstration
+
+> 🎥 **Add your final YouTube or Google Drive video link here.**
 
 ---
 
 # 📚 Academic Context
 
-This application was developed as part of a **Group Software Development Project**.
+Campus Marketplace was developed as part of a **Group Software Development Project**.
 
-The project demonstrates practical application of:
+The project demonstrates practical experience in:
 
-- Software architecture
-- Mobile application development
+- React Native development
+- Expo application development
 - TypeScript
-- React Native
-- Expo
 - Firebase Authentication
 - Cloud Firestore
-- Database security rules
-- Client-side state management
-- Search and filtering algorithms
+- Firestore security rules
+- Search and filtering
+- State management
 - UI/UX design
 - Git and GitHub collaboration
 - Feature branching
-- Pull Request-based development
+- Pull Requests
+- Team-based software development
 
 ---
 
@@ -726,10 +710,10 @@ The project demonstrates practical application of:
 
 **Campus Marketplace Team**
 
-Built with ❤️ by university students, for university students.
+> Built with ❤️ by university students, for university students.
 
 ---
 
 ## 📄 License
 
-This project was developed for academic and educational purposes as part of a university group software development project.
+This project was developed for **academic and educational purposes** as part of a university Group Software Development Project.
