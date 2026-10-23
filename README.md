@@ -33,11 +33,11 @@ The project was developed as part of a **Group Software Development Project** us
 
 | Registration No. | Student Name | Assigned Role | Key Contributions |
 |---|---|---|---|
-| **2023/CSC/011** | **B. Althaf Samly** | Team Lead & Full-Stack Architect | Project architecture and scaffolding; Firebase integration; authentication lifecycle; Firestore security rules; application coordinator state; Saved favorites wishlist; in-app chat threads; campus safety guidelines; and seller messaging functionality. |
-| **2023/CSC/094** | **K.G.D.N. Kotuwegedara** | Inventory & Dashboard Engineer | Mark as Sold lifecycle; listing status toggle; sold-out overlay badges across listing cards and detail views; seller dashboard inventory metrics. |
-| **2023/CSC/038** | **K.D.M.G.S. Dissanayaka** | Filtering & Pricing Engineer | Dynamic price filtering; price bracket preset chips; active filter tags; instant filter reset; and condition filters. |
-| **2023/CSC/012** | **V. Amasha Chathumini** | Search & Discovery Engineer | Enhanced listing search; keyword matching across titles, descriptions, categories, and sellers; campus location selector modal; and category tabs. |
-| **2023/CSC/031** | **J.B.U.L. Nayanashan** | UI/UX & Design Systems Engineer | UI/UX improvements; unified theme tokens; verified digital student ID card component; contextual empty states; and project documentation. |
+| **2023/CSC/011** | **B. Althaf Samly** |  Full-Stack Architect | Project architecture and scaffolding; Firebase integration; authentication lifecycle; Firestore security rules; application coordinator state; Saved favorites wishlist; in-app chat threads; campus safety guidelines; and seller messaging functionality. |
+| **2023/CSC/094** | **K.G.D.N. Kotuwegedara** | Inventory & Dashboard | Mark as Sold lifecycle; listing status toggle; sold-out overlay badges across listing cards and detail views; seller dashboard inventory metrics. |
+| **2023/CSC/038** | **K.D.M.G.S. Dissanayaka** | Filtering & Pricing  | Dynamic price filtering; price bracket preset chips; active filter tags; instant filter reset; and condition filters. |
+| **2023/CSC/012** | **V. Amasha Chathumini** | Search & Discovery  | Enhanced listing search; keyword matching across titles, descriptions, categories, and sellers; campus location selector modal; and category tabs. |
+| **2023/CSC/031** | **J.B.U.L. Nayanashan** | UI/UX & Design Systems  | UI/UX improvements; unified theme tokens; verified digital student ID card component; contextual empty states; and project documentation. |
 
 ---
 
